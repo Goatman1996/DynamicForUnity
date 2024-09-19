@@ -1,0 +1,12 @@
+{
+  "name": "com.gm.dynamic",
+  "version": "0.0.1",
+  "displayName": "Dynamic For Unity",
+  "description": "Unity Support Dynamic",
+  "unity": "2020.3.17f1",
+  "author": {
+    "name": "Goatman",
+    "email": "goatman914@gmail.com",
+    "url": "https://github.com/Goatman1996/"
+  }
+}

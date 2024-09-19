@@ -195,7 +195,7 @@ private void Object_Sample()
 
   // 等于 dynamicObject.As<GameObject>("GameObject") = this.gameObject 
   dynamicObject.As<GameObject>() = this.gameObject;
-  // 等于 dynamicObject.As<GameObject>("GameObject") = this.gameObject 
+  // 等于 dynamicObject.As<Transform>("Transform") = this.transform 
   dynamicObject.As<Transform>() = this.transform;
 
   // 不指定Key的写法，可以让一个DynamicObject使用起来好像是任何东西的多态一样

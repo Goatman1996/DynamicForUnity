@@ -29,6 +29,7 @@ namespace GM.Dynamic
             {
                 throw new Exception($"[DynamicRefCollection] Get {key} not found!");
             }
+            DefaultField = default;
             return ref DefaultField;
         }
 
@@ -114,7 +115,7 @@ namespace GM.Dynamic
         }
         object IEnumerator.Current => throw new NotImplementedException();
 
-        public int index;
+        private int index;
 
         public void Dispose()
         {

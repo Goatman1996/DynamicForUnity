@@ -1,18 +1,19 @@
 using System;
+using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace GM.Dynamic
 {
+    [StructLayout(LayoutKind.Sequential)]
     public unsafe struct DynamicField
     {
-        private const int SIZE = 56;
-
         private Type dataType;
         private DataWrapper dataWrapper;
 
         internal bool IsEmpty => dataType == null;
 
+        private const int SIZE = 56;
         [StructLayout(LayoutKind.Explicit, Size = SIZE)]
         private struct DataWrapper { }
 

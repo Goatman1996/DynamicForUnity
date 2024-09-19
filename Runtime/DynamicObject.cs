@@ -12,8 +12,7 @@ namespace GM.Dynamic
         public T TryAs<T>() => this.TryAs<T>(GetTypeNameCached<T>());
         public T TryAs<T>(string key)
         {
-            this.fieldCollection.Add(key);
-            return this.fieldCollection.Get(key).TryAs<T>();
+            return this.fieldCollection.Get(key, false).TryAs<T>();
         }
 
         public ref T As<T>() => ref this.As<T>(GetTypeNameCached<T>());

@@ -12,7 +12,7 @@ Dynamic For Unity，为Unity实现了dynamic能力
     
 DynamicField，可以储存"任意"类型，不论是class还是struct，且类型转换0GC，无装/拆箱，无反射
 
-注：["任意"](### "任意")，指具有一定的限制，问题不大，后面会讲
+注：["任意"](#"任意")，指具有一定的限制，问题不大，后面会讲
 
 ### 动态对象 - DynamicObject
 

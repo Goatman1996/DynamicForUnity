@@ -12,7 +12,7 @@ Dynamic For Unity，为Unity实现了dynamic能力
     
 DynamicField，可以储存"任意"类型，不论是class还是struct，且类型转换0GC，无装/拆箱，无反射
 
-注："任意"，指具有一定的限制，问题不大，后面会讲
+注：["任意"](### "任意")，指具有一定的限制，问题不大，后面会讲
 
 ### 动态对象 - DynamicObject
 
@@ -35,6 +35,44 @@ Unity最小版本 `2020.3.17f1`（更小的版本如3.12f1可能也可以，未�
 以下功能不包含任何GC，且无装箱拆箱，无反射
 
 DynamicField 可以存储"任意"类型
+
+API介绍
+
+``` csharp
+using GM.Dynamic;
+
+// DynamicField is struct
+DynamicField dynamicField;
+
+// -------------
+// As 是 可读可写的
+// -------------
+dynamicField.As<T>() = (T)value;
+T value = dynamicField.As<T>();
+// 特别的 一旦As，若当前DynamicField的值类型不匹配，DynamicField的值会重置为default(T)
+
+
+
+// -------------
+// Is 类型判断
+// -------------
+bool is_T = dynamicField.Is<T>();
+// 对于值类型的T，直接判断是否是同类型
+// 对于引用类型，有两种情况
+// 1. value != null 时, return value is T
+// 2. value == null 时, return false
+
+
+
+// -------------
+// TryAs 是 只读的
+// -------------
+dynamicField.As<T1>() = value_T1;
+// 这会得到 default(T2)，且不改变原有值，值依旧是 value_T1
+T2 value = dynamicField.TryAs<T2>();
+```
+
+以下是详细是示例
 
 ``` csharp
 using GM.Dynamic;
@@ -145,6 +183,8 @@ private void Is_Sample()
   Debug.Log(dynamicField.Is<Vector3>());// false
 }
 ```
+
+### "任意"
 ---
 重要！！！"任意"类型 指 任何sizeof(T) <= 56 的值类型 和 任意引用类型（sizeof(引用类型) == 地址长度）
 ---
@@ -153,10 +193,61 @@ private void Is_Sample()
 
 当尝试使用 sizeof(T) > 56 时。会抛出 StructOverSizeException 异常
 
+TODO:后续可能会考虑一定程度上开放MaximumSize的设置
+
 动态对象 - DynamicObject 的使用方法
 ---
 
 动态对象，是基于DynamicField实现的，模仿了jsObject动态字段的功能
+
+API介绍
+``` csharp
+using GM.Dynamic;
+
+// DynamicObject is class
+DynamicObject dynamicObject = new();
+
+// 动态对象，本质上是一个"字典"，string为key，DynamicField为value
+// DynamicObject 的基本API与 DynamicField 一致：
+// ------- As<T>()      等价于 As<T>(typeof(T).Name)
+// ------- TryAs<T>()   等价于 TryAs<T>(typeof(T).Name)
+// ------- Is<T>()      等价于 Is<T>(typeof(T).Name)
+// 事实上 typeof(T).Name 有GC，所以实际代码做了缓存
+dynamicObject.As<int>() = 1；
+int int_1 = dynamicObject.TryAs<int>();
+bool is_Int = dynamicObject.Is<int>();
+// 上下相等
+dynamicObject.As<int>(typeof(int).Name) = 1；
+int int_1 = dynamicObject.TryAs<int>(typeof(int).Name);
+bool is_Int = dynamicObject.Is<int>(typeof(int).Name);
+
+// ----------
+// DynamicObject.Reset
+// 清空一个字段，可以腾出空间
+// ----------
+dynamicObject.Reset("Field Key");
+dynamicObject.Reset<T>();// dynamicObject.Reset(typeof(T).Name);
+
+// ----------
+// DynamicObject.Every<T>()
+// 可遍历所有T类型的字段
+// ----------
+DynamicEnumerable<T> every_T_Enumerable = dynamicObject.Every<T>();
+DynamicEnumerator<T> every_T_Enumerator = every_T_Enumerable.GetEnumerator();
+// 可foreach 遍历 （只读遍历）
+foreach (T item in every_T_Enumerable){ }
+// 可手动遍历 （可写遍历）
+while (every_T_Enumerator.MoveNext())
+{
+  // RefCurrent 可写（假设T = int）
+  every_T_Enumerator.RefCurrent += 1;
+  // Current 只读（假设T = int）
+  int i = every_T_Enumerator.Current;
+}
+
+```
+
+以下是详细是示例
 
 ``` csharp
 using GM.Dynamic;
@@ -167,12 +258,6 @@ DynamicObject dynamicObject = new();
 // DynamicObject 基本 示例
 private void Object_Sample()
 {
-  // 动态对象，本质上是一个"字典"，string为key，DynamicField为value
-  // DynamicObject 的基本API与 DynamicField 一致：
-  // ------- As<T>()      等价于 As<T>(typeof(T).Name)
-  // ------- TryAs<T>()   等价于 TryAs<T>(typeof(T).Name)
-  // ------- Is<T>()      等价于 Is<T>(typeof(T).Name)
-  // 事实上 typeof(T).Name 有GC，所以实际代码做了缓存
   dynamicObject.As<int>("Int_1") = 4;
   int int_1 = dynamicObject.As<int>("Int_1");
 
@@ -184,18 +269,20 @@ private void Object_Sample()
   float not_Float = dynamicObject.TryAs<float>("Bool_1");
   bool bool_1 = dynamicObject.TryAs<bool>("Bool_1");
 
+  // console = 4_5_0_True
+  Debug.Log($"{int_1}_{float_1}_{not_Float}_{bool_1}");
+
   dynamicObject.As<GameObject>("BattleTarget") = new GameObject();
   if (dynamicObject.TryAs<GameObject>("BattleTarget") != null)
   {
       // Fight
   }
 
-  // console = 4_5_0_True
-  Debug.Log($"{int_1}_{float_1}_{not_Float}_{bool_1}");
 
-  // 等于 dynamicObject.As<GameObject>("GameObject") = this.gameObject 
+
+  // 下面等于 dynamicObject.As<GameObject>(typeof(GameObject).Name) = this.gameObject 
   dynamicObject.As<GameObject>() = this.gameObject;
-  // 等于 dynamicObject.As<Transform>("Transform") = this.transform 
+  // 下面等于 dynamicObject.As<Transform>(typeof(Transform).Name) = this.transform 
   dynamicObject.As<Transform>() = this.transform;
 
   // 不指定Key的写法，可以让一个DynamicObject使用起来好像是任何东西的多态一样
@@ -246,3 +333,10 @@ private void Object_Reset_Sample()
   }
 }
 ```
+
+### 最后
+
+觉得有趣的点个Star~
+
+谢谢~
+

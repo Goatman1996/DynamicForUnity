@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "displayName": "Dynamic For Unity",
   "description": "Unity Support Dynamic",
-  "unity": "2020.3",
+  "unity": "2022.3",
   "author": {
     "name": "Goatman",
     "email": "goatman914@gmail.com",

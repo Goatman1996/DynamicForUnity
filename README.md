@@ -24,8 +24,8 @@ DynamicObject，可以拥有任意数量，"任意"类型的字段（基于上�
 
 Unity最小版本 `2022.3.17f1`（更小的版本如3.12f1可能也可以，未做测试）
 
-1. 通过 [NuGetForUnity](https://github.com/GlitchEnzo/NuGetForUnity) 安装 `System.Runtime.CompilerServices.Unsafe 6.0.0` 包
-2. 通过 `OpenUPM` 安装 https://openupm.com/packages/com.gm.dynamic/
+第1步. 通过 [NuGetForUnity](https://github.com/GlitchEnzo/NuGetForUnity) 安装 `System.Runtime.CompilerServices.Unsafe 6.0.0` 包
+第2步. 通过 `OpenUPM` 安装 https://openupm.com/packages/com.gm.dynamic/ 本插件
 
 ### 使用
 

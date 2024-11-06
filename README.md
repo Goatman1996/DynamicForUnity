@@ -1,5 +1,22 @@
 # Dynamic For Unity
 
+### 1.0.1
+将Type.FullName作为Key，以支持泛型
+
+DynamicObject添加Api
+``` csharp
+RecordObject<T>
+RecordStruct<T>  
+用于添加不需要指定Key索引的存储内容，
+仅可通过DynamicObject.Every(T)查询
+删除方式如下
+var enumtor = this.dynamicObject.Every<T>().GetEnumerator();
+while (enumtor.MoveNext())
+{
+    enumtor.ResetCurrent();
+}
+```
+
 ### 简介
 
 Dynamic For Unity，为Unity实现了dynamic能力

@@ -10,6 +10,7 @@ namespace GM.Dynamic
         private static DynamicField DefaultField;
         private DynamicField[] dataList = new DynamicField[8];
         private Dictionary<string, int> dataIndexDict = new();
+        private Dictionary<int, string> index_Key_Dict = new();
 
         internal int Length { get { return dataList.Length; } }
 
@@ -41,6 +42,7 @@ namespace GM.Dynamic
             }
             int emptyIndex = FindFirstEmptyField();
             dataIndexDict[key] = emptyIndex;
+            index_Key_Dict[emptyIndex] = key;
         }
 
         internal void Remove(string key)
@@ -52,6 +54,24 @@ namespace GM.Dynamic
             int index = dataIndexDict[key];
             dataList[index] = new DynamicField();
             dataIndexDict.Remove(key);
+            index_Key_Dict.Remove(index);
+        }
+
+        internal ref DynamicField GetEmpty()
+        {
+            int emptyIndex = FindFirstEmptyField();
+            return ref this.dataList[emptyIndex];
+        }
+
+        internal void RemoveAt(int index)
+        {
+            if (index_Key_Dict.ContainsKey(index))
+            {
+                var key = index_Key_Dict[index];
+                dataIndexDict.Remove(key);
+                index_Key_Dict.Remove(index);
+            }
+            dataList[index] = new DynamicField();
         }
 
         private int FindFirstEmptyField()
@@ -113,6 +133,12 @@ namespace GM.Dynamic
         {
             get => ref collector.GetAt(index).As<T>();
         }
+
+        public void ResetCurrent()
+        {
+            this.collector.RemoveAt(index);
+        }
+
         object IEnumerator.Current => throw new NotImplementedException();
 
         private int index;
